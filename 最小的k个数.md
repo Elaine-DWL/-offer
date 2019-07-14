@@ -75,3 +75,43 @@ public:
 };
 ```
 
+### 思路三
+
+堆排序。构建最小堆的时间复杂度是O(n)，取前k个最小的元素是O(klogn)。
+
+```cpp
+class Solution {
+public:
+    void adjust(vector<int> &nums, int idx, int tail){
+        // 从idx向下调整
+        int t_min = idx;
+        int left = 2*idx+1, right=2*idx+2;
+        if(left <= tail && nums[left] < nums[t_min]) t_min = left;
+        if(right <= tail && nums[right] < nums[t_min]) t_min = right;
+        if(idx!=t_min){
+            swap(nums[idx], nums[t_min]);
+            adjust(nums, t_min, tail);
+        }
+    }
+    vector<int> GetLeastNumbers_Solution(vector<int> nums, int k) {
+        // 最小的k的数   用最小堆实现
+        // 构建最小堆 从最后一个非叶子结点开始 向上进行调整
+        int n = nums.size();
+        if(k >n) return {};
+        // 构建小顶堆
+        for(int i=(n-2)/2; i>=0; i--){
+            adjust(nums, i, n-1);
+        }
+        vector<int> res;
+        int tail = n-1;
+        while(k>0){
+            res.push_back(nums[0]);
+            swap(nums[0], nums[tail--]);
+            adjust(nums, 0, tail);
+            k--;
+        }
+        return res;
+    }
+};
+```
+
